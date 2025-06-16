@@ -1,4 +1,4 @@
-import { SCHEMA_VERSION, validateSchemaCompatibility } from '@arbio/shared-models';
+import { SCHEMA_VERSION as CURRENT_SCHEMA_VERSION, validateSchemaCompatibility } from '@arbio/shared-models';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
@@ -10,7 +10,15 @@ import orderRoutes from './features/orders/orders.route';
 import userRoutes from './features/users/users.route';
 
 // Validate schema compatibility at startup
-validateSchemaCompatibility(process.env.SCHEMA_VERSION);
+const expectedSchemaVersion = process.env.SCHEMA_VERSION;
+
+if (!expectedSchemaVersion) {
+  console.warn('⚠️ SCHEMA_VERSION not set. Skipping compatibility check.');
+} else {
+  validateSchemaCompatibility(expectedSchemaVersion);
+  console.log(`✅ Schema version ${expectedSchemaVersion} is compatible with ${CURRENT_SCHEMA_VERSION}`);
+}
+
 
 const app = express();
 
@@ -62,7 +70,7 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     service: 'service-a',
     version: '1.0.0',
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'

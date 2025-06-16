@@ -6,6 +6,7 @@ This project demonstrates a scalable architecture for sharing TypeORM models acr
 
 ## 📦 Project Structure
 
+```bash
 .
 ├── lerna.json
 ├── package-lock.json
@@ -74,6 +75,7 @@ This project demonstrates a scalable architecture for sharing TypeORM models acr
         │       ├── database.ts
         │       └── version.ts
         └── tsconfig.json
+```
 
 
 - `shared-models`: Contains TypeORM entities, DTOs, migrations, and utilities shared across services.

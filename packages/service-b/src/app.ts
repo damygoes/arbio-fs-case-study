@@ -1,4 +1,4 @@
-import { SCHEMA_VERSION, validateSchemaCompatibility } from '@arbio/shared-models';
+import { SCHEMA_VERSION as CURRENT_SCHEMA_VERSION, validateSchemaCompatibility } from '@arbio/shared-models';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
@@ -10,7 +10,14 @@ import analyticsRoutes from './features/analytics/analytics.route';
 import syncRoutes from './features/sync/sync.route';
 
 // Validate schema compatibility at startup
-validateSchemaCompatibility(process.env.SCHEMA_VERSION);
+const expectedSchemaVersion = process.env.SCHEMA_VERSION;
+
+if (!expectedSchemaVersion) {
+  console.warn('⚠️ SCHEMA_VERSION not set. Skipping compatibility check.');
+} else {
+  validateSchemaCompatibility(expectedSchemaVersion);
+  console.log(`✅ Schema version ${expectedSchemaVersion} is compatible with ${CURRENT_SCHEMA_VERSION}`);
+}
 
 const app = express();
 
@@ -63,7 +70,7 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     service: 'service-b',
     version: '1.0.0',
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     description: 'Analytics and reporting service',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
@@ -77,7 +84,7 @@ app.get('/info', (req, res) => {
     service: 'Service B - Analytics & Reporting',
     version: '1.0.0',
     description: 'Specialized service for business analytics, reporting, and data insights',
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     capabilities: [
       'Business analytics and metrics',
       'Period-over-period comparisons', 
