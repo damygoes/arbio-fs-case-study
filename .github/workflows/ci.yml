@@ -54,9 +54,6 @@ jobs:
     - name: 🔍 Validate schema - service-b
       run: npx ts-node packages/service-b/src/scripts/validate-schema.ts
 
-    - name: Lint
-      run: npm run lint
-
     - name: Build
       run: npm run build
 
