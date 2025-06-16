@@ -49,10 +49,10 @@ jobs:
         echo "DB_DATABASE=test_db" >> $GITHUB_ENV
 
     - name: 🔍 Validate schema - service-a
-      run: npx ts-node packages/service-a/scripts/validate-schema.ts
+      run: npx ts-node packages/service-a/src/scripts/validate-schema.ts
 
     - name: 🔍 Validate schema - service-b
-      run: npx ts-node packages/service-b/scripts/validate-schema.ts
+      run: npx ts-node packages/service-b/src/scripts/validate-schema.ts
 
     - name: Lint
       run: npm run lint
