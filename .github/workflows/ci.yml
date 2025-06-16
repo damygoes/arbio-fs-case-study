@@ -59,8 +59,8 @@ jobs:
             sleep 1
           done
 
-      - name: Run DB migrations
-        run: npx typeorm migration:run
+      - name: Run DB migrations - service-a
+        run: npx typeorm migration:run --dataSource packages/service-a/src/data-source.ts
         env:
           DB_HOST: localhost
           DB_PORT: 3306
