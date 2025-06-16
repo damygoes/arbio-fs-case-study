@@ -1,0 +1,35 @@
+{
+  "name": "arbio",
+  "version": "1.0.0",
+  "description": "Microservices architecture with shared TypeORM models",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "lerna run build",
+    "dev": "lerna run dev --parallel",
+    "test": "lerna run test",
+    "lint": "lerna run lint",
+    "clean": "lerna clean",
+    "setup": "npm install && npm run build",
+    "start:service-a": "cd packages/service-a && npm run dev",
+    "start:service-b": "cd packages/service-b && npm run dev",
+    "migrate:service-a": "cd packages/service-a && npm run migration:run",
+    "migrate:service-b": "cd packages/service-b && npm run migration:run",
+    "seed:service-a": "cd packages/service-a && npm run seed",
+    "version": "lerna version",
+    "publish": "lerna publish"
+  },
+  "devDependencies": {
+    "lerna": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
