@@ -60,7 +60,7 @@ jobs:
           done
 
       - name: Run DB migrations - service-a
-        run: npx ts-node --esm ./node_modules/typeorm/cli.js migration:run --dataSource packages/service-a/src/data-source.ts
+        run: npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --dataSource packages/service-a/src/data-source.ts
         env:
           DB_HOST: localhost
           DB_PORT: 3306
