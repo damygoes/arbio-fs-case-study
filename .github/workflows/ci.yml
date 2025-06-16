@@ -113,7 +113,7 @@ jobs:
       run: npm ci
 
     - name: Bootstrap packages
-      run: npm run bootstrap
+      run: npm run setup
 
     - name: Build
       run: npm run build
