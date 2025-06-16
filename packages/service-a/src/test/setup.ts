@@ -16,11 +16,16 @@ afterAll(async () => {
 // Clear database between tests
 beforeEach(async () => {
   if (process.env.NODE_ENV === 'test') {
-    // Clear test data between tests
+    // Disable FK checks before clearing
+    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0');
+
     const entities = AppDataSource.entityMetadatas;
     for (const entity of entities) {
       const repository = AppDataSource.getRepository(entity.name);
-      await repository.clear();
+      await repository.clear(); // effectively DELETE FROM table;
     }
+
+    // Re-enable FK checks after clearing
+    await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1');
   }
 });
