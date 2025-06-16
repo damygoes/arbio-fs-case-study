@@ -25,46 +25,67 @@ jobs:
         node-version: [18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Bootstrap packages
-      run: npm run setup
+      - name: Bootstrap packages
+        run: npm run setup
 
-    - name: Set environment variables
-      run: |
-        echo "SCHEMA_VERSION=1.0.0" >> $GITHUB_ENV
-        echo "DB_HOST=localhost" >> $GITHUB_ENV
-        echo "DB_PORT=3306" >> $GITHUB_ENV
-        echo "DB_USERNAME=root" >> $GITHUB_ENV
-        echo "DB_PASSWORD=password" >> $GITHUB_ENV
-        echo "DB_DATABASE=test_db" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          echo "SCHEMA_VERSION=1.0.0" >> $GITHUB_ENV
+          echo "DB_HOST=localhost" >> $GITHUB_ENV
+          echo "DB_PORT=3306" >> $GITHUB_ENV
+          echo "DB_USERNAME=root" >> $GITHUB_ENV
+          echo "DB_PASSWORD=password" >> $GITHUB_ENV
+          echo "DB_DATABASE=test_db" >> $GITHUB_ENV
 
-    - name: 🔍 Validate schema - service-a
-      run: npx ts-node packages/service-a/src/scripts/validate-schema.ts
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {30..0}; do
+            if mysqladmin ping -h localhost -P 3306 --silent; then
+              echo "MySQL is up"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 1
+          done
 
-    - name: 🔍 Validate schema - service-b
-      run: npx ts-node packages/service-b/src/scripts/validate-schema.ts
+      - name: Run DB migrations
+        run: npx typeorm migration:run
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_USERNAME: root
+          DB_PASSWORD: password
+          DB_DATABASE: test_db
 
-    - name: Build
-      run: npm run build
+      - name: 🔍 Validate schema - service-a
+        run: npx ts-node packages/service-a/src/scripts/validate-schema.ts
 
-    - name: Run Tests
-      run: npm run test
-      env:
-        DB_HOST: localhost
-        DB_PORT: 3306
-        DB_USERNAME: root
-        DB_PASSWORD: password
-        DB_DATABASE: test_db
+      - name: 🔍 Validate schema - service-b
+        run: npx ts-node packages/service-b/src/scripts/validate-schema.ts
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Tests
+        run: npm run test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_USERNAME: root
+          DB_PASSWORD: password
+          DB_DATABASE: test_db
+
 
   build-and-publish:
     needs: test
